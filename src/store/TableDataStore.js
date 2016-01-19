@@ -41,7 +41,7 @@ export class TableDataStore {
 
   constructor(data) {
     this.data = data;
-    this.customSortFuncMap = null;
+    this.colInfos = null;
     this.filteredData = null;
     this.isOnFilter = false;
     this.filterObj = null;
@@ -50,13 +50,14 @@ export class TableDataStore {
     this.pageObj = {};
     this.selected = [];
     this.multiColumnSearch = false;
+    this.showOnlySelected = false;
     this.remote = false; // remote data
   }
 
   setProps(props) {
     this.keyField = props.keyField;
     this.enablePagination = props.isPagination;
-    this.customSortFuncMap = props.customSortFuncMap;
+    this.colInfos = props.colInfos;
     this.remote = props.remote;
     this.multiColumnSearch = props.multiColumnSearch;
   }
@@ -72,6 +73,10 @@ export class TableDataStore {
     }
   }
 
+  getSortInfo() {
+    return this.sortObj;
+  }
+
   setSelectedRowKey(selectedRowKeys) {
     this.selected = selectedRowKeys;
   }
@@ -85,6 +90,19 @@ export class TableDataStore {
     else return this.data;
   }
 
+  ignoreNonSelected() {
+    this.showOnlySelected = !this.showOnlySelected;
+    if(this.showOnlySelected){
+      this.isOnFilter = true;
+      this.filteredData = this.data.filter( row => {
+        let result = this.selected.find(x => row[this.keyField] === x)
+        return typeof result !== 'undefined' ? true : false;
+      });
+    } else {
+      this.isOnFilter = false;
+    }
+  }
+
   sort(order, sortField) {
     this.sortObj = {
       order: order,
@@ -92,7 +110,7 @@ export class TableDataStore {
     };
 
     let currentDisplayData = this.getCurrentDisplayData();
-    let sortFunc = this.customSortFuncMap[sortField];
+    const { sortFunc } = this.colInfos[sortField];
     currentDisplayData = _sort(currentDisplayData, sortField, order, sortFunc);
 
     return this;
@@ -164,10 +182,18 @@ export class TableDataStore {
       this.filterObj = null;
     } else {
       this.filterObj = filterObj;
-      this.filteredData = this.data.filter(function (row) {
+      this.filteredData = this.data.filter( row => {
         let valid = true;
         for (var key in filterObj) {
-          if (row[key].toString().toLowerCase().indexOf(filterObj[key].toLowerCase()) == -1) {
+          let filterVal = filterObj[key].toLowerCase();
+          let targetVal = row[key];
+          if(this.colInfos[key]) {
+            const { format, filterFormatted } = this.colInfos[key];
+            if(filterFormatted && format) {
+              targetVal = format(row[key], row);
+            }
+          }
+          if (targetVal.toString().toLowerCase().indexOf(filterVal) == -1) {
             valid = false;
             break;
           }
@@ -186,7 +212,7 @@ export class TableDataStore {
     } else {
       this.searchText = searchText;
       var searchTextArray = [];
-      this.filteredData = this.data.filter(function (row) {
+      this.filteredData = this.data.filter( row => {
         let valid = false;
 
         if (this.multiColumnSearch) {
@@ -196,9 +222,16 @@ export class TableDataStore {
         }
 
         for (var key in row) {
-          if (row[key]) {
-            searchTextArray.forEach(function(text) {
-              if (row[key].toString().toLowerCase().indexOf(text.toLowerCase()) !== -1) {
+          if (this.colInfos[key] && row[key]) {
+            searchTextArray.forEach( text => {
+              let filterVal = text.toLowerCase();
+              let targetVal = row[key];
+              const { format, filterFormatted } = this.colInfos[key];
+
+              if(filterFormatted && format) {
+                targetVal = format(targetVal, row);
+              }
+              if (targetVal.toString().toLowerCase().indexOf(filterVal) !== -1) {
                 valid = true;
               }
             });
@@ -206,7 +239,7 @@ export class TableDataStore {
           }
         }
         return valid;
-      }, this);
+      });
       this.isOnFilter = true;
     }
   }

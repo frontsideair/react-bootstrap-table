@@ -1,6 +1,6 @@
 {
   "name": "react-bootstrap-table",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "It' a react table for bootstrap",
   "main": "./dist/react-bootstrap-table.min.js",
   "repository": {
@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "classnames": "^2.1.2",
-    "react-toastr": "^2.3.0"
+    "react-toastr": "^2.3.1"
   },
   "peerDependencies": {
     "react": "^0.14.3"
