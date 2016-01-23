@@ -1,3 +1,43 @@
+<a name="v1.4.3"></a>
+# [v1.4.3](https://github.com/AllenFang/react-bootstrap-table/compare/v1.4.2...v1.4.3) (2016-01-20)
+### Bud fixes
+* Row end with a superfluous comma when export csv([078d91d](https://github.com/AllenFang/react-bootstrap-table/commit/078d91dcc3169a221468aca0647ff0978988e271))
+* Apply a dataFormat column will breaks when hiding([6878e90](https://github.com/AllenFang/react-bootstrap-table/commit/6878e90f8a9ea179384f9c6363994715d0693d1a))
+* Setting default sort and then sorting first time always sort descending([ab43542](https://github.com/AllenFang/react-bootstrap-table/commit/ab43542c8beb0ca41f755fcf495009ab03456a22))
+
+<a name="v1.4.2"></a>
+# [v1.4.2](https://github.com/AllenFang/react-bootstrap-table/compare/v1.4.1...v1.4.2) (2016-01-16)
+### Bug fixes
+* Fix handleSort Function is not changing caret icon([b8ebbb3](https://github.com/AllenFang/react-bootstrap-table/commit/b8ebbb343d6adf702c521fad64f5ef05c1e0aeab))
+* Fix search fails on columns in data set but not included in table([0ce3eb4](https://github.com/AllenFang/react-bootstrap-table/commit/0ce3eb478a1cf7700adf6ddc973b304b56cfdad1))
+
+### Features
+* Support showing selected row only([a18a463](https://github.com/AllenFang/react-bootstrap-table/commit/a18a463d44461fe9ca98174e50e9ea49884b25d6))
+	* add  ```showOnlySelected``` on ```selectRow``` props
+	```js
+	var selectRowProp = {
+		mode: "checkbox",
+		showOnlySelected: true
+	};
+	```
+
+### Enhancement
+* Improve long table performance([564379a](https://github.com/AllenFang/react-bootstrap-table/commit/564379a58866de322b10b7603b961ee50eaacc1b))
+
+<a name="v1.4.1"></a>
+# [v1.4.1](https://github.com/AllenFang/react-bootstrap-table/compare/v1.4.0...v1.4.1) (2016-01-10)
+### Bug fixes
+* Fix the background color of header can't spread to 100%([fa2c827](https://github.com/AllenFang/react-bootstrap-table/commit/fa2c827169e4c1bed0491747f69abe4193cbe89d))
+
+### Features
+* Allow to filter or search data which after formatting([9be42ad](https://github.com/AllenFang/react-bootstrap-table/commit/9be42ad6ea16383089b61f586add197818d5756f))
+	* Apply ```filterFormatted={true}``` on ```<TableHeaderColumn>``` to enable filtering formatted data.
+
+### Enhancement
+* Add class(**table-footer-pagination**) on pagination for better customization([1ab1662](https://github.com/AllenFang/react-bootstrap-table/commit/1ab16629f0a59e17dd3b3a95416d51fae4b3471f))
+* Add class(**table-header-wrapper**) on table header for better customization([fa2c827](https://github.com/AllenFang/react-bootstrap-table/commit/fa2c827169e4c1bed0491747f69abe4193cbe89d))
+* Improve search bar too small on small screens (eg. iphone4/5)([674bf95](https://github.com/AllenFang/react-bootstrap-table/commit/674bf95e577f74988ee42b4dc18b255f8ab203fe), [351d925](https://github.com/AllenFang/react-bootstrap-table/commit/351d9252f87673072e3a7e085d27476ebf818f58))
+
 <a name="v1.4.0"></a>
 # [v1.4.0](https://github.com/AllenFang/react-bootstrap-table/compare/v1.3.3...v1.4.0) (2016-01-06)
 ### Bug fixes

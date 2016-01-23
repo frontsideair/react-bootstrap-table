@@ -43,7 +43,6 @@ class BootstrapTable extends React.Component {
 
   initTable(props){
     let {keyField} = props;
-    let customSortFuncMap = {};
 
     if (!(typeof keyField === 'string' && keyField.length)) {
       React.Children.forEach(props.children, column=> {
@@ -56,20 +55,19 @@ class BootstrapTable extends React.Component {
       }, this);
     }
 
-    React.Children.forEach(props.children, column=> {
-      if (column.props.sortFunc) {
-        customSortFuncMap[column.props.dataField] = column.props.sortFunc;
-      }
-    }, this);
+    let colInfos = this.getColumnsDescription(props).reduce(( prev, curr ) => {
+      prev[curr.name] = curr;
+      return prev;
+    }, {});
 
     if (keyField == null)
       throw "Error. No any key column defined in TableHeaderColumn."+
             "Use 'isKey={true}' to specify an unique column after version 0.5.4.";
 
     this.store.setProps({
-      isPagination:props.pagination,
+      isPagination: props.pagination,
       keyField: keyField,
-      customSortFuncMap: customSortFuncMap,
+      colInfos: colInfos,
       multiColumnSearch: props.multiColumnSearch,
       remote: this.isRemoteDataSource()
     });
@@ -77,6 +75,10 @@ class BootstrapTable extends React.Component {
 
   getTableData() {
      let result = [];
+
+     if(this.props.options.sortName && this.props.options.sortOrder)
+       this.store.sort(this.props.options.sortOrder, this.props.options.sortName);
+
      if (this.props.pagination) {
        let page, sizePerPage;
        if (this.store.isChangedPage()) {
@@ -91,16 +93,42 @@ class BootstrapTable extends React.Component {
        result = this.store.get();
      }
      return result;
-   }
+  }
+
+  getColumnsDescription({ children }) {
+    return children.map((column, i) => {
+      return {
+        name: column.props.dataField,
+        align: column.props.dataAlign,
+        sort: column.props.dataSort,
+        format: column.props.dataFormat,
+        filterFormatted: column.props.filterFormatted,
+        editable: column.props.editable,
+        hidden: column.props.hidden,
+        className: column.props.columnClassName,
+        width: column.props.width,
+        text: column.props.children,
+        sortFunc: column.props.sortFunc,
+        index: i
+      };
+    });
+  }
 
   componentWillReceiveProps(nextProps) {
     this.initTable(nextProps);
     if (Array.isArray(nextProps.data)) {
       this.store.setData(nextProps.data);
-      let page = nextProps.options.page || this.refs.pagination.getCurrentPage();
-      let sizePerPage = nextProps.options.sizePerPage || this.refs.pagination.getSizePerPage();
+      let paginationDom = this.refs.pagination;
+      let page = nextProps.options.page ||
+                  (paginationDom ? paginationDom.getCurrentPage() : 1);
+      let sizePerPage = nextProps.options.sizePerPage ||
+                  (paginationDom ? paginationDom.getSizePerPage() : Const.SIZE_PER_PAGE_LIST[0]);
       // #125
       if(page > Math.ceil(nextProps.data.length / sizePerPage)) page = 1;
+      let sortInfo = this.store.getSortInfo();
+      let sortField = nextProps.options.sortName || (sortInfo ? sortInfo.sortField : undefined);
+      let sortOrder = nextProps.options.sortOrder || (sortInfo ? sortInfo.order : undefined);
+      if(sortField && sortOrder) this.store.sort(sortOrder, sortField);
       let data = this.store.page(page, sizePerPage).get();
       this.setState({
         data: data
@@ -163,21 +191,8 @@ class BootstrapTable extends React.Component {
     if (!Array.isArray(this.props.children)) {
       childrens = [this.props.children];
     }
-    var columns = childrens.map(function (column, i) {
-      return {
-        name: column.props.dataField,
-        align: column.props.dataAlign,
-        sort: column.props.dataSort,
-        format: column.props.dataFormat,
-        editable: column.props.editable,
-        hidden: column.props.hidden,
-        className: column.props.columnClassName,
-        width: column.props.width,
-        text: column.props.children,
-        index: i
-      };
-    }, this);
-
+    var columns = this.getColumnsDescription(this.props);
+    var sortInfo = this.store.getSortInfo();
     var pagination = this.renderPagination();
     var toolBar = this.renderToolBar();
     var tableFilter = this.renderTableFilter(columns);
@@ -190,8 +205,8 @@ class BootstrapTable extends React.Component {
             ref="header"
             rowSelectType={this.props.selectRow.mode}
             hideSelectColumn={this.props.selectRow.hideSelectColumn}
-            sortName={this.props.options.sortName}
-            sortOrder={this.props.options.sortOrder}
+            sortName={sortInfo ? sortInfo.sortField : undefined}
+            sortOrder={sortInfo ? sortInfo.order : undefined}
             onSort={this.handleSort.bind(this)}
             onSelectAllRow={this.handleSelectAllRow.bind(this)}
             bordered={this.props.bordered}
@@ -238,10 +253,6 @@ class BootstrapTable extends React.Component {
   handleSort(order, sortField) {
     if (this.props.options.onSortChange) {
       this.props.options.onSortChange(sortField, order, this.props);
-    }
-
-    if (this.isRemoteDataSource()) {
-      return;
     }
 
     let result = this.store.sort(order, sortField).get();
@@ -291,6 +302,21 @@ class BootstrapTable extends React.Component {
         selectedRowKeys: selectedRowKeys
       });
     }
+  }
+
+  handleShowOnlySelected() {
+    this.store.ignoreNonSelected();
+    let result;
+    if (this.props.pagination) {
+      let sizePerPage = this.refs.pagination.getSizePerPage();
+      result = this.store.page(1, sizePerPage).get();
+      this.refs.pagination.changePage(1);
+    } else {
+      result = this.store.get();
+    }
+    this.setState({
+      data: result
+    });
   }
 
   handleSelectRow(row, isSelected) {
@@ -490,7 +516,7 @@ class BootstrapTable extends React.Component {
         dataSize = this.store.getDataNum();
       }
       return (
-        <div>
+        <div className="table-footer-pagination">
           <PaginationList
             ref="pagination"
             currPage={this.props.options.page || 1}
@@ -509,28 +535,33 @@ class BootstrapTable extends React.Component {
   }
 
   renderToolBar() {
-    let columns;
-    if (Array.isArray(this.props.children)) {
-      columns = this.props.children.map(function (column) {
-        var props = column.props;
-        return {
-          name: props.children,
-          field: props.dataField,
-          //when you want same auto generate value and not allow edit, example ID field
-          autoValue: props.autoValue || false,
-          //for create eidtor, no params for column.editable() indicate that editor for new row
-          editable: props.editable && (typeof props.editable === "function") ? props.editable() : props.editable,
-          format: props.format ? format : false
-        };
-      });
-    } else {
-      columns = [{
-        name: this.props.children.props.children,
-        field: this.props.children.props.dataField,
-        editable: this.props.children.props.editable
-      }];
-    }
-    if (this.props.insertRow || this.props.deleteRow || this.props.search || this.props.exportCSV) {
+    let enableShowOnlySelected = this.props.selectRow && this.props.selectRow.showOnlySelected;
+    if (enableShowOnlySelected
+        || this.props.insertRow
+        || this.props.deleteRow
+        || this.props.search
+        || this.props.exportCSV) {
+      let columns;
+      if (Array.isArray(this.props.children)) {
+        columns = this.props.children.map(function (column) {
+          var props = column.props;
+          return {
+            name: props.children,
+            field: props.dataField,
+            //when you want same auto generate value and not allow edit, example ID field
+            autoValue: props.autoValue || false,
+            //for create eidtor, no params for column.editable() indicate that editor for new row
+            editable: props.editable && (typeof props.editable === "function") ? props.editable() : props.editable,
+            format: props.format ? format : false
+          };
+        });
+      } else {
+        columns = [{
+          name: this.props.children.props.children,
+          field: this.props.children.props.dataField,
+          editable: this.props.children.props.editable
+        }];
+      }
       return (
         <div className="tool-bar">
           <ToolBar
@@ -538,6 +569,7 @@ class BootstrapTable extends React.Component {
             enableDelete={this.props.deleteRow}
             enableSearch={this.props.search}
             enableExportCSV={this.props.exportCSV}
+            enableShowOnlySelected={enableShowOnlySelected}
             columns={columns}
             searchPlaceholder={this.props.searchPlaceholder}
             onAddRow={this.handleAddRow.bind(this)}
@@ -545,6 +577,7 @@ class BootstrapTable extends React.Component {
             onDropRow={this.handleDropRow.bind(this)}
             onSearch={this.handleSearch.bind(this)}
             onExportCSV={this.handleExportCSV.bind(this)}
+            onShowOnlySelected={this.handleShowOnlySelected.bind(this)}
           />
         </div>
       )
@@ -601,7 +634,8 @@ BootstrapTable.propTypes = {
     onSelectAll: React.PropTypes.func,
     clickToSelect: React.PropTypes.bool,
     hideSelectColumn: React.PropTypes.bool,
-    clickToSelectAndEditCell: React.PropTypes.bool
+    clickToSelectAndEditCell: React.PropTypes.bool,
+    showOnlySelected: React.PropTypes.bool
   }),
   cellEdit: React.PropTypes.shape({
     mode: React.PropTypes.string,
@@ -655,7 +689,8 @@ BootstrapTable.defaultProps = {
     onSelectAll: undefined,
     clickToSelect: false,
     hideSelectColumn: false,
-    clickToSelectAndEditCell: false
+    clickToSelectAndEditCell: false,
+    showOnlySelected: false
   },
   cellEdit: {
     mode: Const.CELL_EDIT_NONE,
@@ -670,7 +705,7 @@ BootstrapTable.defaultProps = {
   trClassName: '',
   options: {
     sortName: undefined,
-    sortOrder: Const.SORT_DESC,
+    sortOrder: undefined,
     afterTableComplete: undefined,
     afterDeleteRow: undefined,
     afterInsertRow: undefined,
