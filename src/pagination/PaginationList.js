@@ -101,23 +101,19 @@ class PaginationList extends Component {
     return pages.map(function(page) {
       const isActive = page === this.props.currPage;
       let disabled = false;
-      let hidden = false;
       if (this.props.currPage === 1 &&
         (page === this.props.firstPage || page === this.props.prePage)) {
         disabled = true;
-        hidden = true;
       }
       if (this.props.currPage === this.totalPages &&
         (page === this.props.nextPage || page === this.props.lastPage)) {
         disabled = true;
-        hidden = true;
       }
       return (
         <PageButton key={ page }
           changePage={ this.changePage }
           active={ isActive }
-          disable={ disabled }
-          hidden={ hidden }>
+          disable={ disabled }>
           { page }
         </PageButton>
       );
@@ -137,7 +133,7 @@ class PaginationList extends Component {
       startPage = endPage - this.props.paginationSize + 1;
     }
 
-    if (startPage !== 1 && this.totalPages > this.props.paginationSize) {
+    if (this.totalPages > this.props.paginationSize) {
       pages = [ this.props.firstPage, this.props.prePage ];
     } else if (this.totalPages > 1) {
       pages = [ this.props.prePage ];
@@ -149,12 +145,9 @@ class PaginationList extends Component {
       if (i > 0) pages.push(i);
     }
 
-    if (endPage !== this.totalPages) {
-      pages.push(this.props.nextPage);
-      pages.push(this.props.lastPage);
-    } else if (this.totalPages > 1) {
-      pages.push(this.props.nextPage);
-    }
+    pages.push(this.props.nextPage);
+    pages.push(this.props.lastPage);
+
     return pages;
   }
 }
