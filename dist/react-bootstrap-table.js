@@ -1069,10 +1069,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  SORT_DESC: 'desc',
 	  SORT_ASC: 'asc',
 	  SIZE_PER_PAGE: 10,
-	  NEXT_PAGE: '>',
-	  LAST_PAGE: '>>',
-	  PRE_PAGE: '<',
-	  FIRST_PAGE: '<<',
+	  NEXT_PAGE: '›',
+	  LAST_PAGE: '»',
+	  PRE_PAGE: '‹',
+	  FIRST_PAGE: '«',
 	  ROW_SELECT_BG_COLOR: '',
 	  ROW_SELECT_NONE: 'none',
 	  ROW_SELECT_SINGLE: 'radio',
@@ -1286,7 +1286,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	  Copyright (c) 2016 Jed Watson.
+	  Copyright (c) 2015 Jed Watson.
 	  Licensed under the MIT License (MIT), see
 	  http://jedwatson.github.io/classnames
 	*/
@@ -1298,7 +1298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		var hasOwn = {}.hasOwnProperty;
 
 		function classNames () {
-			var classes = [];
+			var classes = '';
 
 			for (var i = 0; i < arguments.length; i++) {
 				var arg = arguments[i];
@@ -1307,19 +1307,19 @@ return /******/ (function(modules) { // webpackBootstrap
 				var argType = typeof arg;
 
 				if (argType === 'string' || argType === 'number') {
-					classes.push(arg);
+					classes += ' ' + arg;
 				} else if (Array.isArray(arg)) {
-					classes.push(classNames.apply(null, arg));
+					classes += ' ' + classNames.apply(null, arg);
 				} else if (argType === 'object') {
 					for (var key in arg) {
 						if (hasOwn.call(arg, key) && arg[key]) {
-							classes.push(key);
+							classes += ' ' + key;
 						}
 					}
 				}
 			}
 
-			return classes.join(' ');
+			return classes.substr(1);
 		}
 
 		if (typeof module !== 'undefined' && module.exports) {
@@ -2449,22 +2449,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }, {
-	    key: "render",
-	    value: function render() {
-	      var _this3 = this;
-
-	      return _react2.default.createElement(
-	        "div",
-	        _extends({}, this.props, { "aria-live": "polite", role: "alert" }),
-	        this.state.toasts.map(function (toast) {
-	          return _this3.props.toastMessageFactory(toast);
-	        })
-	      );
-	    }
-	  }, {
 	    key: "_notify",
 	    value: function _notify(type, message, title) {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      var optionsOverride = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
@@ -2487,7 +2474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if ("function" === typeof optionsOverride.handleOnClick) {
 	              optionsOverride.handleOnClick();
 	            }
-	            return _this4._handle_toast_on_click(e);
+	            return _this3._handle_toast_on_click(e);
 	          },
 	          handleRemove: this._handle_toast_remove.bind(this)
 	        }
@@ -2513,24 +2500,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: "_handle_toast_remove",
 	    value: function _handle_toast_remove(toastId) {
-	      var _this5 = this;
+	      var _this4 = this;
 
 	      var operationName = "" + (this.props.newestOnTop ? "reduceRight" : "reduce");
 	      this.state.toasts[operationName](function (found, toast, index) {
 	        if (found || toast.toastId !== toastId) {
 	          return false;
 	        }
-	        _this5.setState((0, _reactAddonsUpdate2.default)(_this5.state, {
+	        _this4.setState((0, _reactAddonsUpdate2.default)(_this4.state, {
 	          toasts: { $splice: [[index, 1]] }
 	        }));
 	        return true;
 	      }, false);
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      var _this5 = this;
+
+	      return _react2.default.createElement(
+	        "div",
+	        _extends({}, this.props, { "aria-live": "polite", role: "alert" }),
+	        this.state.toasts.map(function (toast) {
+	          return _this5.props.toastMessageFactory(toast);
+	        })
+	      );
 	    }
 	  }]);
 
 	  return ToastContainer;
 	}(_react.Component);
 
+	ToastContainer.propTypes = {
+	  toastType: _react.PropTypes.shape({
+	    error: _react.PropTypes.string,
+	    info: _react.PropTypes.string,
+	    success: _react.PropTypes.string,
+	    warning: _react.PropTypes.string
+	  }).isRequired,
+	  id: _react.PropTypes.string.isRequired,
+	  toastMessageFactory: _react.PropTypes.func.isRequired,
+	  preventDuplicates: _react.PropTypes.bool.isRequired,
+	  newestOnTop: _react.PropTypes.bool.isRequired,
+	  onClick: _react.PropTypes.func.isRequired
+	};
 	ToastContainer.defaultProps = {
 	  toastType: {
 	    error: "error",
@@ -2929,11 +2942,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _reactAddonsUpdate2 = _interopRequireDefault(_reactAddonsUpdate);
 
-	var _classnames = __webpack_require__(6);
+	var _classnames = __webpack_require__(23);
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _animationMixin = __webpack_require__(23);
+	var _animationMixin = __webpack_require__(24);
 
 	var _animationMixin2 = _interopRequireDefault(_animationMixin);
 
@@ -3046,23 +3059,77 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  Copyright (c) 2016 Jed Watson.
+	  Licensed under the MIT License (MIT), see
+	  http://jedwatson.github.io/classnames
+	*/
+	/* global define */
+
+	(function () {
+		'use strict';
+
+		var hasOwn = {}.hasOwnProperty;
+
+		function classNames () {
+			var classes = [];
+
+			for (var i = 0; i < arguments.length; i++) {
+				var arg = arguments[i];
+				if (!arg) continue;
+
+				var argType = typeof arg;
+
+				if (argType === 'string' || argType === 'number') {
+					classes.push(arg);
+				} else if (Array.isArray(arg)) {
+					classes.push(classNames.apply(null, arg));
+				} else if (argType === 'object') {
+					for (var key in arg) {
+						if (hasOwn.call(arg, key) && arg[key]) {
+							classes.push(key);
+						}
+					}
+				}
+			}
+
+			return classes.join(' ');
+		}
+
+		if (typeof module !== 'undefined' && module.exports) {
+			module.exports = classNames;
+		} else if (true) {
+			// register as 'classnames', consistent with npm package name
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return classNames;
+			}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			window.classNames = classNames;
+		}
+	}());
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _CSSCore = __webpack_require__(24);
-
-	var _CSSCore2 = _interopRequireDefault(_CSSCore);
-
-	var _ReactTransitionEvents = __webpack_require__(26);
+	var _ReactTransitionEvents = __webpack_require__(25);
 
 	var _ReactTransitionEvents2 = _interopRequireDefault(_ReactTransitionEvents);
 
 	var _reactDom = __webpack_require__(5);
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _elementClass = __webpack_require__(27);
+
+	var _elementClass2 = _interopRequireDefault(_elementClass);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3120,15 +3187,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 
-	      _CSSCore2.default.removeClass(node, className);
-	      _CSSCore2.default.removeClass(node, activeClassName);
+	      var classList = (0, _elementClass2.default)(node);
+	      classList.remove(className);
+	      classList.remove(activeClassName);
 
 	      _ReactTransitionEvents2.default.removeEndEventListener(node, endListener);
 	    };
 
 	    _ReactTransitionEvents2.default.addEndEventListener(node, endListener);
 
-	    _CSSCore2.default.addClass(node, className);
+	    (0, _elementClass2.default)(node).add(className);
 
 	    // Need to do this to actually trigger a transition.
 	    this._queue_class(activeClassName);
@@ -3139,8 +3207,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var className = this.props.transition + "-" + animationType;
 	    var activeClassName = className + "-active";
 
-	    _CSSCore2.default.removeClass(node, className);
-	    _CSSCore2.default.removeClass(node, activeClassName);
+	    var classList = (0, _elementClass2.default)(node);
+	    classList.remove(className);
+	    classList.remove(activeClassName);
 	  },
 	  _set_animation: function _set_animation(hide) {
 	    var node = _reactDom2.default.findDOMNode(this);
@@ -3151,7 +3220,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      animations.forEach(function (anim) {
-	        _CSSCore2.default.removeClass(node, anim);
+	        return (0, _elementClass2.default)(node).remove(anim);
 	      });
 
 	      _ReactTransitionEvents2.default.removeEndEventListener(node, endListener);
@@ -3160,7 +3229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _ReactTransitionEvents2.default.addEndEventListener(node, endListener);
 
 	    animations.forEach(function (anim) {
-	      _CSSCore2.default.addClass(node, anim);
+	      return (0, _elementClass2.default)(node).add(anim);
 	    });
 	  },
 	  _get_animation_classes: function _get_animation_classes(hide) {
@@ -3172,11 +3241,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	  _clear_animation: function _clear_animation(hide) {
-	    var _this2 = this;
-
+	    var node = _reactDom2.default.findDOMNode(this);
 	    var animations = this._get_animation_classes(hide);
 	    animations.forEach(function (animation) {
-	      _CSSCore2.default.removeClass(_reactDom2.default.findDOMNode(_this2), animation);
+	      return (0, _elementClass2.default)(node).remove(animation);
 	    });
 	  },
 	  _queue_class: function _queue_class(className) {
@@ -3187,8 +3255,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	  _flush_class_name_queue: function _flush_class_name_queue() {
+	    var _this2 = this;
+
 	    if (this._is_mounted) {
-	      this.classNameQueue.forEach(_CSSCore2.default.addClass.bind(_CSSCore2.default, _reactDom2.default.findDOMNode(this)));
+	      (function () {
+	        var node = _reactDom2.default.findDOMNode(_this2);
+	        _this2.classNameQueue.forEach(function (className) {
+	          return (0, _elementClass2.default)(node).add(className);
+	        });
+	      })();
 	    }
 	    this.classNameQueue.length = 0;
 	    this.timeout = null;
@@ -3241,166 +3316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule CSSCore
-	 * @typechecks
-	 */
-
-	'use strict';
-
-	var invariant = __webpack_require__(25);
-
-	/**
-	 * The CSSCore module specifies the API (and implements most of the methods)
-	 * that should be used when dealing with the display of elements (via their
-	 * CSS classes and visibility on screen. It is an API focused on mutating the
-	 * display and not reading it as no logical state should be encoded in the
-	 * display of elements.
-	 */
-
-	var CSSCore = {
-
-	  /**
-	   * Adds the class passed in to the element if it doesn't already have it.
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {DOMElement} the element passed in
-	   */
-	  addClass: function (element, className) {
-	    !!/\s/.test(className) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'CSSCore.addClass takes only a single class name. "%s" contains ' + 'multiple classes.', className) : invariant(false) : undefined;
-
-	    if (className) {
-	      if (element.classList) {
-	        element.classList.add(className);
-	      } else if (!CSSCore.hasClass(element, className)) {
-	        element.className = element.className + ' ' + className;
-	      }
-	    }
-	    return element;
-	  },
-
-	  /**
-	   * Removes the class passed in from the element
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {DOMElement} the element passed in
-	   */
-	  removeClass: function (element, className) {
-	    !!/\s/.test(className) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'CSSCore.removeClass takes only a single class name. "%s" contains ' + 'multiple classes.', className) : invariant(false) : undefined;
-
-	    if (className) {
-	      if (element.classList) {
-	        element.classList.remove(className);
-	      } else if (CSSCore.hasClass(element, className)) {
-	        element.className = element.className.replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)', 'g'), '$1').replace(/\s+/g, ' ') // multiple spaces to one
-	        .replace(/^\s*|\s*$/g, ''); // trim the ends
-	      }
-	    }
-	    return element;
-	  },
-
-	  /**
-	   * Helper to add or remove a class from an element based on a condition.
-	   *
-	   * @param {DOMElement} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @param {*} bool condition to whether to add or remove the class
-	   * @return {DOMElement} the element passed in
-	   */
-	  conditionClass: function (element, className, bool) {
-	    return (bool ? CSSCore.addClass : CSSCore.removeClass)(element, className);
-	  },
-
-	  /**
-	   * Tests whether the element has the class specified.
-	   *
-	   * @param {DOMNode|DOMWindow} element the element to set the class on
-	   * @param {string} className the CSS className
-	   * @return {boolean} true if the element has the class, false if not
-	   */
-	  hasClass: function (element, className) {
-	    !!/\s/.test(className) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'CSS.hasClass takes only a single class name.') : invariant(false) : undefined;
-	    if (element.classList) {
-	      return !!className && element.classList.contains(className);
-	    }
-	    return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
-	  }
-
-	};
-
-	module.exports = CSSCore;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
-
-/***/ },
 /* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule invariant
-	 */
-
-	'use strict';
-
-	/**
-	 * Use invariant() to assert state which your program assumes to be true.
-	 *
-	 * Provide sprintf-style format (only %s is supported) and arguments
-	 * to provide information about what broke and what you were
-	 * expecting.
-	 *
-	 * The invariant message will be stripped in production, but the invariant
-	 * will remain to ensure logic does not differ in production.
-	 */
-
-	function invariant(condition, format, a, b, c, d, e, f) {
-	  if (process.env.NODE_ENV !== 'production') {
-	    if (format === undefined) {
-	      throw new Error('invariant requires an error message argument');
-	    }
-	  }
-
-	  if (!condition) {
-	    var error;
-	    if (format === undefined) {
-	      error = new Error('Minified exception occurred; use the non-minified dev environment ' + 'for the full error message and additional helpful warnings.');
-	    } else {
-	      var args = [a, b, c, d, e, f];
-	      var argIndex = 0;
-	      error = new Error(format.replace(/%s/g, function () {
-	        return args[argIndex++];
-	      }));
-	      error.name = 'Invariant Violation';
-	    }
-
-	    error.framesToPop = 1; // we don't care about invariant's own frame
-	    throw error;
-	  }
-	}
-
-	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
-
-/***/ },
-/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3416,7 +3332,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(27);
+	var ExecutionEnvironment = __webpack_require__(26);
 
 	/**
 	 * EVENT_NAME_MAP is used to determine which event fired when a
@@ -3514,7 +3430,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = ReactTransitionEvents;
 
 /***/ },
-/* 27 */
+/* 26 */
 /***/ function(module, exports) {
 
 	/**
@@ -3553,6 +3469,71 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	module.exports = ExecutionEnvironment;
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	module.exports = function(opts) {
+	  return new ElementClass(opts)
+	}
+
+	function indexOf(arr, prop) {
+	  if (arr.indexOf) return arr.indexOf(prop)
+	  for (var i = 0, len = arr.length; i < len; i++)
+	    if (arr[i] === prop) return i
+	  return -1
+	}
+
+	function ElementClass(opts) {
+	  if (!(this instanceof ElementClass)) return new ElementClass(opts)
+	  var self = this
+	  if (!opts) opts = {}
+
+	  // similar doing instanceof HTMLElement but works in IE8
+	  if (opts.nodeType) opts = {el: opts}
+
+	  this.opts = opts
+	  this.el = opts.el || document.body
+	  if (typeof this.el !== 'object') this.el = document.querySelector(this.el)
+	}
+
+	ElementClass.prototype.add = function(className) {
+	  var el = this.el
+	  if (!el) return
+	  if (el.className === "") return el.className = className
+	  var classes = el.className.split(' ')
+	  if (indexOf(classes, className) > -1) return classes
+	  classes.push(className)
+	  el.className = classes.join(' ')
+	  return classes
+	}
+
+	ElementClass.prototype.remove = function(className) {
+	  var el = this.el
+	  if (!el) return
+	  if (el.className === "") return
+	  var classes = el.className.split(' ')
+	  var idx = indexOf(classes, className)
+	  if (idx > -1) classes.splice(idx, 1)
+	  el.className = classes.join(' ')
+	  return classes
+	}
+
+	ElementClass.prototype.has = function(className) {
+	  var el = this.el
+	  if (!el) return
+	  var classes = el.className.split(' ')
+	  return indexOf(classes, className) > -1
+	}
+
+	ElementClass.prototype.toggle = function(className) {
+	  var el = this.el
+	  if (!el) return
+	  if (this.has(className)) this.remove(className)
+	  else this.add(className)
+	}
+
 
 /***/ },
 /* 28 */
@@ -3824,22 +3805,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return pages.map(function (page) {
 	        var isActive = page === this.props.currPage;
 	        var disabled = false;
-	        var hidden = false;
 	        if (this.props.currPage === 1 && (page === this.props.firstPage || page === this.props.prePage)) {
 	          disabled = true;
-	          hidden = true;
 	        }
 	        if (this.props.currPage === this.totalPages && (page === this.props.nextPage || page === this.props.lastPage)) {
 	          disabled = true;
-	          hidden = true;
 	        }
 	        return _react2['default'].createElement(
 	          _PageButtonJs2['default'],
 	          { key: page,
 	            changePage: this.changePage,
 	            active: isActive,
-	            disable: disabled,
-	            hidden: hidden },
+	            disable: disabled },
 	          page
 	        );
 	      }, this);
@@ -3859,7 +3836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        startPage = endPage - this.props.paginationSize + 1;
 	      }
 
-	      if (startPage !== 1 && this.totalPages > this.props.paginationSize) {
+	      if (this.totalPages > this.props.paginationSize) {
 	        pages = [this.props.firstPage, this.props.prePage];
 	      } else if (this.totalPages > 1) {
 	        pages = [this.props.prePage];
@@ -3871,12 +3848,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (i > 0) pages.push(i);
 	      }
 
-	      if (endPage !== this.totalPages) {
-	        pages.push(this.props.nextPage);
-	        pages.push(this.props.lastPage);
-	      } else if (this.totalPages > 1) {
-	        pages.push(this.props.nextPage);
-	      }
+	      pages.push(this.props.nextPage);
+	      pages.push(this.props.lastPage);
+
 	      return pages;
 	    }
 	  }]);
@@ -3960,7 +3934,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        { className: classes },
 	        _react2['default'].createElement(
 	          'a',
-	          { href: '#', onClick: this.pageBtnClick },
+	          { href: true, onClick: this.pageBtnClick },
 	          this.props.children
 	        )
 	      );
