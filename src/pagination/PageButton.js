@@ -20,7 +20,7 @@ class PageButton extends Component {
     });
     return (
       <li className={ classes }>
-        <a href='#' onClick={ this.pageBtnClick }>{ this.props.children }</a>
+        <a href onClick={ this.pageBtnClick }>{ this.props.children }</a>
       </li>
     );
   }
